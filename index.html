@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Friend Tap Counter</title>
+<title>Baap Counter</title>
 
 <style>
 
@@ -17,27 +17,27 @@ padding:0;
 }
 
 h1{
-margin-top:20px;
+margin-top:30px;
 font-size:40px;
 }
 
 .container{
 display:grid;
-grid-template-columns:repeat(auto-fit,minmax(200px,1fr));
+grid-template-columns:repeat(auto-fit,minmax(220px,1fr));
 gap:20px;
 padding:40px;
 }
 
 .card{
 background:rgba(255,255,255,0.1);
-padding:20px;
+padding:25px;
 border-radius:20px;
 backdrop-filter:blur(10px);
-box-shadow:0 8px 25px rgba(0,0,0,0.4);
+box-shadow:0 10px 25px rgba(0,0,0,0.4);
 }
 
 .name{
-font-size:24px;
+font-size:22px;
 margin-bottom:10px;
 }
 
@@ -61,7 +61,7 @@ transform:scale(1.05);
 }
 
 .admin{
-margin:30px;
+margin:40px;
 }
 
 input,select{
@@ -76,7 +76,7 @@ margin:5px;
 
 <body>
 
-<h1>🔥 Baap Counter 🔥</h1>
+<h1>🔥 BAAP COUNTER 🔥</h1>
 
 <div class="container" id="friends"></div>
 
@@ -100,7 +100,7 @@ margin:5px;
 </div>
 
 <audio id="meme">
-<source src="meme.mp3">
+<source src="https://www.myinstants.com/media/sounds/vine-boom.mp3">
 </audio>
 
 <script type="module">
@@ -120,14 +120,14 @@ const firebaseConfig = {
 const app = initializeApp(firebaseConfig);
 const db = getDatabase(app);
 
-const friends = [
+const friends=[
 "Harsh Chakka",
 "Dev Bhadwa",
 "Kush Randhawa",
 "Omm Choti luli"
 ];
 
-const container = document.getElementById("friends");
+const container=document.getElementById("friends");
 
 function render(data){
 
@@ -135,7 +135,7 @@ container.innerHTML="";
 
 friends.forEach((name,i)=>{
 
-let count = data?.[i] || 0;
+let count=data?.[i] || 0;
 
 let card=document.createElement("div");
 card.className="card";
@@ -154,13 +154,31 @@ container.appendChild(card);
 
 window.tap = async function(i){
 
-const counterRef = ref(db,"counts/"+i);
+const counterRef=ref(db,"counts/"+i);
 
-const snapshot = await get(counterRef);
+const snapshot=await get(counterRef);
 
-let value = snapshot.val() || 0;
+let value=snapshot.val() || 0;
 
 await set(counterRef,value+1);
+
+document.getElementById("meme").play();
+
+};
+
+window.adminUpdate = async function(){
+
+const pass=document.getElementById("adminPass").value;
+
+if(pass!=="admin123"){
+alert("Wrong Password");
+return;
+}
+
+const friend=parseInt(document.getElementById("friendSelect").value);
+const val=parseInt(document.getElementById("newValue").value);
+
+await set(ref(db,"counts/"+friend),val);
 
 };
 
