@@ -103,31 +103,46 @@ margin:5px;
 <source src="meme.mp3">
 </audio>
 
-<script>
+<script type="module">
 
-const friends=[
+import { initializeApp } from "https://www.gstatic.com/firebasejs/12.12.0/firebase-app.js";
+import { getDatabase, ref, onValue, get, set } from "https://www.gstatic.com/firebasejs/12.12.0/firebase-database.js";
+
+const firebaseConfig = {
+  apiKey: "AIzaSyDgTE0RqEXj7QbQetRHE54IAoI4oaUWqSI",
+  authDomain: "baap-counter.firebaseapp.com",
+  projectId: "baap-counter",
+  storageBucket: "baap-counter.firebasestorage.app",
+  messagingSenderId: "480116560020",
+  appId: "1:480116560020:web:f10f312058556ef12b6481"
+};
+
+const app = initializeApp(firebaseConfig);
+const db = getDatabase(app);
+
+const friends = [
 "Harsh Chakka",
 "Dev Bhadwa",
 "Kush Randhawa",
 "Omm Choti luli"
 ];
 
-let counts=JSON.parse(localStorage.getItem("counts"))||[0,0,0,0];
+const container = document.getElementById("friends");
 
-const container=document.getElementById("friends");
-
-function render(){
+function render(data){
 
 container.innerHTML="";
 
 friends.forEach((name,i)=>{
+
+let count = data?.[i] || 0;
 
 let card=document.createElement("div");
 card.className="card";
 
 card.innerHTML=`
 <div class="name">${name}</div>
-<div class="count" id="count${i}">${counts[i]}</div>
+<div class="count">${count}</div>
 <button onclick="tap(${i})">TAP</button>
 `;
 
@@ -137,38 +152,23 @@ container.appendChild(card);
 
 }
 
-function tap(i){
+window.tap = async function(i){
 
-counts[i]++;
+const counterRef = ref(db,"counts/"+i);
 
-localStorage.setItem("counts",JSON.stringify(counts));
+const snapshot = await get(counterRef);
 
-document.getElementById("count"+i).innerText=counts[i];
+let value = snapshot.val() || 0;
 
-document.getElementById("meme").play();
+await set(counterRef,value+1);
 
-}
+};
 
-function adminUpdate(){
+onValue(ref(db,"counts"),(snapshot)=>{
 
-const pass=document.getElementById("adminPass").value;
-const val=parseInt(document.getElementById("newValue").value);
-const friend=parseInt(document.getElementById("friendSelect").value);
+render(snapshot.val());
 
-if(pass!=="admin123"){
-alert("Wrong Password");
-return;
-}
-
-counts[friend]=val;
-
-localStorage.setItem("counts",JSON.stringify(counts));
-
-render();
-
-}
-
-render();
+});
 
 </script>
 
